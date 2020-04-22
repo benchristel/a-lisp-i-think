@@ -112,4 +112,24 @@ describe Blisp do
 
     expect(Blisp.eval([factorial, factorial, 5])).to eq 120
   end
+
+  it "declares constants in a let expression" do
+    program = [
+      :let, :add, [:quot, :a, :b, [:+, :a, :b]],
+      :add, 1, 2
+    ]
+    expect(Blisp.eval(program)).to be 3
+  end
+
+  it "can declare multiple let expressions" do
+    program = [
+      :let, :add, [:quot, :a, :b, [:+, :a, :b]],
+      :let, :inc, [:add, 1],
+      :let, :mul, [:quot, :a, :b, [:*, :a, :b]],
+      :let, :double, [:mul, 2],
+      :let, :compose, [:quot, :f, :g, :x, [:f, [:g, :x]]],
+      [:compose, :double, :inc], 10
+    ]
+    expect(Blisp.eval(program)).to be 22
+  end
 end

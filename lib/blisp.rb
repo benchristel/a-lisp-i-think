@@ -12,6 +12,8 @@ module Blisp
       expr
     in [:cond, *items]
       cond(*items)
+    in [:let, name, value, *rest]
+      eval(replace(rest, name, value))
     in [func, *args]
       apply(eval(func), args.map(&method(:eval)))
     else
@@ -72,6 +74,17 @@ module Blisp
       ref
     in Array => a
       a.map { |elem| add_refs(elem, var, value) }
+    else
+      expr
+    end
+  end
+
+  def self.replace(expr, var, value)
+    case expr
+    in ^var
+      value
+    in Array => a
+      a.map { |elem| replace(elem, var, value) }
     else
       expr
     end
